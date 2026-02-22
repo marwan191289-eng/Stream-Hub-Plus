@@ -9,24 +9,29 @@ export const channels = pgTable("channels", {
   category: text("category").notNull(),
   logo: text("logo"),
   country: text("country"),
+  extId: text("ext_id"), // External ID from IPTV provider
 });
 
 export const movies = pgTable("movies", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  description: text("description").notNull(),
+  description: text("description"),
   videoUrl: text("video_url").notNull(),
-  posterUrl: text("poster_url").notNull(),
+  posterUrl: text("poster_url"),
   year: integer("year"),
   rating: text("rating"),
+  category: text("category"),
+  extId: text("ext_id"),
 });
 
 export const series = pgTable("series", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  description: text("description").notNull(),
-  posterUrl: text("poster_url").notNull(),
+  description: text("description"),
+  posterUrl: text("poster_url"),
   year: integer("year"),
+  category: text("category"),
+  extId: text("ext_id"),
 });
 
 export const episodes = pgTable("episodes", {
@@ -36,6 +41,7 @@ export const episodes = pgTable("episodes", {
   episode: integer("episode").notNull(),
   title: text("title").notNull(),
   videoUrl: text("video_url").notNull(),
+  extId: text("ext_id"),
 });
 
 export const insertChannelSchema = createInsertSchema(channels).omit({ id: true });

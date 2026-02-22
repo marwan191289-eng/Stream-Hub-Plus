@@ -53,7 +53,7 @@ export async function registerRoutes(
     res.json(items);
   });
   
-  // Proxy endpoint to bypass CORS
+  // Proxy endpoint to bypass CORS and regional restrictions
   app.get('/api/proxy', async (req, res) => {
     const targetUrl = req.query.url as string;
     if (!targetUrl) {
@@ -63,8 +63,10 @@ export async function registerRoutes(
     try {
       const fetchResponse = await fetch(targetUrl, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           'Accept': '*/*',
+          'Connection': 'keep-alive',
+          'Referer': targetUrl,
         }
       });
       
@@ -73,19 +75,26 @@ export async function registerRoutes(
         res.setHeader('Content-Type', contentType);
       }
       
-      // Allow CORS for the proxy
+      // Essential for IPTV streams
       res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'no-cache');
       
-      const buffer = await fetchResponse.arrayBuffer();
-      res.send(Buffer.from(buffer));
+      if (fetchResponse.body) {
+        // @ts-ignore
+        const nodeStream = (await import('node:stream')).Readable.from(fetchResponse.body);
+        nodeStream.pipe(res);
+      } else {
+        res.status(404).end();
+      }
     } catch (error: any) {
       console.error("Proxy error:", error);
       res.status(500).json({ message: "Error proxying request" });
     }
   });
 
-  // Seed data
-  await seedDatabase();
+  // @ts-ignore
+  const { syncIptvData } = await import('./iptv');
+  syncIptvData().catch(console.error);
 
   return httpServer;
 }
