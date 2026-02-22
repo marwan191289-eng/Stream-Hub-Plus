@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import { syncIptvData } from "./iptv";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -92,8 +93,7 @@ export async function registerRoutes(
     }
   });
 
-  // @ts-ignore
-  const { syncIptvData } = await import('./iptv');
+  // Start background sync
   syncIptvData().catch(console.error);
 
   return httpServer;

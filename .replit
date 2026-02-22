@@ -35,5 +35,13 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
-waitForPort = 5000
+args = "git remote add origin https://github.com/marwan191289-eng/iptv.git git branch -M main git push -u origin main"
+
+[[workflows.workflow]]
+name = "iptv"
+mode = "sequential"
+author = 54634076
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git remote add origin https://github.com/marwan191289-eng/iptv.git git branch -M main git push -u origin main"
